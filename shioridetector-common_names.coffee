@@ -28,7 +28,7 @@ stat_detect = (fs, file_path, shiori_name) ->
 		fs.stat file_path, (err, stat) ->
 			if err? then reject() else resolve shiori_name
 
-resolve_pseudo_shiori = (resolve, reject, shiori) ->
+resolve_pseudo_shiori = (resolve, reject, fs, shiori) ->
 	if shiori?
 		try
 			resolve new shiori(fs)
@@ -47,22 +47,24 @@ detector = (fs, dirpath, shiories) ->
 			shiori_name = shiori_by_dll_name[shiori_path]
 			if shiori_name?
 				shiori = shiories[shiori_name]
-				resolve_pseudo_shiori(resolve, reject, shiori)
+				resolve_pseudo_shiori(resolve, reject, fs, shiori)
 			else
-				detect_promise = stat_detect(fs, 'kawarirc.kis', 'kawari')
-				.catch -> stat_detect(fs, 'kawari.ini', 'kawari7') # no kis and ini
+				detect_promise = stat_detect(fs, dirpath + 'kawarirc.kis', 'kawari')
+				.catch -> stat_detect(fs, dirpath + 'kawari.ini', 'kawari7') # no kis and ini
 				for file_path, shiori_name of shiori_by_dll_name
-					detect_promise = detect_promise.catch -> stat_detect(fs, dirpath + file_path, shiori_name)
+					detect_promise = ((file_path, shiori_name) ->
+						detect_promise.catch -> stat_detect(fs, dirpath + file_path, shiori_name)
+					)(file_path, shiori_name)
 				detect_promise.then (shiori_name) ->
 					shiori = shiories[shiori_name]
-					resolve_pseudo_shiori(resolve, reject, shiori)
+					resolve_pseudo_shiori(resolve, reject, fs, shiori)
 				, (error) ->
 					resolve null
 
 if module?.exports?
 	module.exports = detector
 else
-	if @ShioriLoader?.shiori_detector?
-		ShioriLoader.shiori_detector.push detector
+	if @ShioriLoader?.shiori_detectors?
+		ShioriLoader.shiori_detectors.push detector
 	else
 		throw "load ShioriLoader first"
