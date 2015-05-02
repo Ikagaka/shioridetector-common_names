@@ -28,7 +28,7 @@ stat_detect = (fs, file_path, shiori_name) ->
 		fs.stat file_path, (err, stat) ->
 			if err? then reject() else resolve shiori_name
 
-resolve_pseudo_shiori = (resolve, reject, fs, shiori) ->
+resolve_pseudo_shiori = (resolve, reject, fs, shiori, shiori_name) ->
 	if shiori?
 		try
 			resolve new shiori(fs)
@@ -47,7 +47,7 @@ detector = (fs, dirpath, shiories) ->
 			shiori_name = shiori_by_dll_name[shiori_path]
 			if shiori_name?
 				shiori = shiories[shiori_name]
-				resolve_pseudo_shiori(resolve, reject, fs, shiori)
+				resolve_pseudo_shiori(resolve, reject, fs, shiori, shiori_name)
 			else
 				detect_promise = stat_detect(fs, dirpath + 'kawarirc.kis', 'kawari')
 				.catch -> stat_detect(fs, dirpath + 'kawari.ini', 'kawari7') # no kis and ini
@@ -57,7 +57,7 @@ detector = (fs, dirpath, shiories) ->
 					)(file_path, shiori_name)
 				detect_promise.then (shiori_name) ->
 					shiori = shiories[shiori_name]
-					resolve_pseudo_shiori(resolve, reject, fs, shiori)
+					resolve_pseudo_shiori(resolve, reject, fs, shiori, shiori_name)
 				, (error) ->
 					resolve null
 
