@@ -1,0 +1,26 @@
+{
+  "name": "shioridetector-common_names",
+  "version": "0.0.1",
+  "description": "shioridetector-common_names",
+  "keywords": [],
+  "main": "./shioridetector-common_names.js",
+  "scripts": {
+    "build": "coffee -c shioridetector-common_names.coffee",
+    "test": "gulp test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "coffee-script": "^1.10.0"
+  },
+  "url": "https://github.com/Ikagaka/shioridetector-common_names",
+  "author": {
+    "name": "Narazaka",
+    "email": "info@narazaka.net",
+    "url": "https://narazaka.net/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ikagaka/shioridetector-common_names.git"
+  }
+}
